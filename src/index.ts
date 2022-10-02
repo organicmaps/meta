@@ -133,6 +133,7 @@ export async function handleRequest(request: Request) {
       }
 
       if (donatesEnabled) {
+        console.log('Donates enabled');
         if (request.cf?.country == 'RU') {
           response.settings = {
             DonateUrl: DONATE_URL_RU,
