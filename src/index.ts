@@ -133,6 +133,7 @@ export async function handleRequest(request: Request) {
       }
 
       if (donatesEnabled) {
+        // To count enabled donations.
         console.log('Donates enabled');
         if (request.cf?.country == 'RU') {
           response.settings = {
