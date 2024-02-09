@@ -1,6 +1,7 @@
 export {};
 
 import { getServersList } from './servers';
+import { getLatestRelease } from './releases';
 
 // Main entry point.
 addEventListener('fetch', (event) => {
@@ -15,6 +16,8 @@ export async function handleRequest(request: Request) {
     case '/resources': // Public for resources.
     case '/servers':
       return getServersList(request);
+    case '/releases':
+      return getLatestRelease(request);
   }
   return new Response('', { status: 404 });
 }

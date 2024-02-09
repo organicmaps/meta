@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { parseDataVersion, parseAppVersion } from '../src/versions';
+import { parseDataVersion, parseAppVersion, parseApkName } from '../src/versions';
 
 describe('parseDataVersion', () => {
   const tests: { [key: string]: number | null } = {
@@ -18,6 +18,22 @@ describe('parseDataVersion', () => {
   test('', () => expect(parseDataVersion(null)).toEqual(null));
 });
 
+describe('parseApkName', () => {
+  const tests: { [key: string]: object | null } = {
+    'OrganicMaps-24020611-web-release.apk': { code: 24020611, flavor: 'web', type: 'release' },
+    'OrganicMaps-24020611-web-release': null,
+    'OrganicMaps-24020611-web-.apk': null,
+    'OrganicMaps-24020611- -.apk': null,
+    'OrganicMaps-2402061-web-release.apk': null,
+    garbage: null,
+    '': null,
+    null: null,
+  };
+  for (const input in tests) {
+    test(input, () => expect(parseApkName(input)).toEqual(tests[input]));
+  }
+});
+
 describe('parseAppVersion', () => {
   const tests: { [key: string]: object | null } = {
     // Older iOS releases without donate menu
@@ -27,8 +43,8 @@ describe('parseAppVersion', () => {
     // There were no such versions in production.
     '2022.08.01-1': null,
     '2022.08.01-1-Google': { code: 220801, build: 1, flavor: 'google' },
-    // -debug is ignored
-    '2022.08.01-1-Google-debug': { code: 220801, build: 1, flavor: 'google' },
+    '2022.08.01-1-Google-debug': { code: 220801, build: 1, flavor: 'google', type: 'debug' },
+    '2022.08.01-1-Google-beta': { code: 220801, build: 1, flavor: 'google', type: 'beta' },
     // TODO: Fix regexp. Not it should not happen in production.
     //'2022.08.01-1-fd-debug': { code: 220801, build: 1, flavor: 'fd' },
     '2022.1.1-0': null,
