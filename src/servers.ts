@@ -123,7 +123,8 @@ export async function getServersList(request: Request) {
     // Older clients download from the archive.
     servers = [SERVER.backblaze];
   } else if (dataVersion == 240702 && request.headers.get('x-om-appversion') == '1.8.6-4-ios') {
-    // Redirect unknown bad guys who uses our servers to a slow download "trap" node.
+    // Redirect https://apps.apple.com/us/app/mapxplorer-navigation-radar/id6463052823
+    // who abuses our servers to a slow download "trap" node.
     return new Response('["https://cdn-fi2.organicmaps.app/"]', {
       headers: { 'Content-Type': 'application/json' },
     });
