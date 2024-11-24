@@ -1,5 +1,14 @@
 import { parseDataVersion, parseAppVersion } from './versions';
 
+// Redirect bad guys who abuses our servers to a slow download "trap" node.
+const abusedVersions = [
+  '1.8.6-4-ios', // https://apps.apple.com/us/app/mapxplorer-navigation-radar/id6463052823
+  '1.8.7-1-ios',
+  '1.8.8-1-ios',
+  '2024.11.17-1-Web', // https://play.google.com/store/apps/details?id=desert.maps.navigator.web
+  '2024.11.16-1', // https://play.google.com/store/apps/details?id=desert.maps.saudi
+];
+
 export const DATA_VERSIONS = [
   210529, //
   210703,
@@ -121,16 +130,9 @@ export async function getServersList(request: Request) {
   // of their current maps data version, for example, "211022" (October 22, 2021).
   // It is lowercased by Cloudflare.
   const dataVersion = parseDataVersion(request.headers.get('x-om-dataversion'));
-  const abusedVersions = ['1.8.6-4-ios', '1.8.7-1-ios', '1.8.8-1-ios'];
   if (dataVersion === null) {
     // Older clients download from the archive.
     servers = [SERVER.backblaze];
-  } else if (dataVersion == 240702 && abusedVersions.includes(request.headers.get('x-om-appversion'))) {
-    // Redirect https://apps.apple.com/us/app/mapxplorer-navigation-radar/id6463052823
-    // who abuses our servers to a slow download "trap" node.
-    return new Response('["https://cdn-fi2.organicmaps.app/"]', {
-      headers: { 'Content-Type': 'application/json' },
-    });
   } else {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore workarounds error TS2339: Property 'continent' does not exist on type 'IncomingRequestCfProperties<unknown>'.
@@ -161,7 +163,15 @@ export async function getServersList(request: Request) {
   servers = servers.map((server) => server.url);
 
   // Header "X-OM-AppVersion: 2022.09.22-3-Google" (lowercased by CF) is supported from August 23, 2022.
-  const appVersion = parseAppVersion(request.headers.get('x-om-appversion'));
+  const appVersionHeader = request.headers.get('x-om-appversion');
+
+  if (appVersionHeader && abusedVersions.includes(appVersionHeader)) {
+    return new Response('["https://cdn-fi2.organicmaps.app/"]', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const appVersion = parseAppVersion(appVersionHeader);
   if (!appVersion) {
     // Old format for <220823
     return new Response(JSON.stringify(servers), {
