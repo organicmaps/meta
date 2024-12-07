@@ -111,6 +111,11 @@ export const SERVER = {
     url: 'https://cdn-us-west1.organicmaps.app/',
     dataVersions: 2,
   },
+  vi1: {
+    // Vietnam, unlimited 1Gbps bandwidth
+    url: 'https://cdn-vi1.organicmaps.app/',
+    dataVersions: 5,
+  },
 };
 
 // Exported for tests.
@@ -140,8 +145,17 @@ export async function getServersList(request: Request) {
       // See https://developers.cloudflare.com/firewall/cf-firewall-language/fields for a list of all continents.
       case 'NA': // North America
       case 'SA': // South America
-      case 'OC': // Oceania
         servers = [SERVER.us_east1, SERVER.us_west1, SERVER.uk1, SERVER.nl1, SERVER.planet].filter((server) =>
+          DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion),
+        );
+        break;
+      case 'OC': // Oceania
+        servers = [SERVER.vi1, SERVER.us_east1, SERVER.us_west1, SERVER.planet].filter((server) =>
+          DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion),
+        );
+        break;
+      case 'AS': // Asia
+        servers = [SERVER.vi1, SERVER.uk1, SERVER.nl1, SERVER.planet].filter((server) =>
           DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion),
         );
         break;
