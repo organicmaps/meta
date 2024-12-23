@@ -222,7 +222,7 @@ export async function getServersList(request: Request) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     response.settings = {
       DonateUrl: DONATE_URL,
-      NY: 'false', // Must be `string` instead of `bool`, otherwise clients will crash
+      NY: 'true', // Must be `string` instead of `bool`, otherwise clients will crash
     };
     if (appVersion.code >= 241022) {
       const locale = request.headers.get('accept-language');
