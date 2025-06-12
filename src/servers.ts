@@ -53,6 +53,7 @@ export const DATA_VERSIONS = [
   250329,
   250418,
   250511,
+  250608,
 ];
 
 const kUnlimited = 99999;
