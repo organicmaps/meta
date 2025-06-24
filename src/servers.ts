@@ -123,6 +123,11 @@ export const SERVER = {
     url: 'https://cdn-vi1.organicmaps.app/',
     dataVersions: 5,
   },
+  ru1: {
+    // Novosibirsk, to workaround provider blocking.
+    url: 'https://cdn-ru1.organicmaps.app/',
+    dataVersions: 2,
+  },
 };
 
 // Exported for tests.
@@ -168,9 +173,12 @@ export async function getServersList(request: Request) {
         break;
       default:
         // Every other continent + Tor networks.
-        servers = [SERVER.planet, SERVER.uk1, SERVER.nl1, SERVER.fi1, SERVER.de1, SERVER.de2, SERVER.de3].filter(
-          (server) => DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion),
-        );
+        servers = [SERVER.planet, SERVER.uk1, SERVER.nl1, SERVER.fi1, SERVER.de1, SERVER.de2, SERVER.de3];
+
+        if (request.cf?.country === 'RU') servers.unshift(SERVER.ru1);
+
+        servers = servers.filter((server) => DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion));
+
         // Only fallback to the archive in the US if nothing was found closer.
         if (servers.length == 0 && DATA_VERSIONS.slice(-SERVER.backblaze.dataVersions).includes(dataVersion)) {
           servers = [SERVER.backblaze];
