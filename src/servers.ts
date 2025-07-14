@@ -174,9 +174,8 @@ export async function getServersList(request: Request) {
         break;
       default:
         // Every other continent + Tor networks.
-        servers = [SERVER.planet, SERVER.uk1, SERVER.nl1, SERVER.fi1, SERVER.de1, SERVER.de2, SERVER.de3];
-
-        if (request.cf?.country === 'RU') servers.unshift(SERVER.ru1);
+        if (request.cf?.country === 'RU') servers = [SERVER.ru1, SERVER.uk1, SERVER.nl1];
+        else servers = [SERVER.planet, SERVER.uk1, SERVER.nl1, SERVER.fi1, SERVER.de1, SERVER.de2, SERVER.de3];
 
         servers = servers.filter((server) => DATA_VERSIONS.slice(-server.dataVersions).includes(dataVersion));
 
